@@ -25,6 +25,25 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+
+
+    const articleCollection = client.db("NewspaperDB").collection('allArticles')
+
+    app.post('/articles', async (req, res) => {
+      const addArticles = req.body;
+      console.log(addArticles);
+      const result = await articleCollection.insertOne(addArticles);
+      res.send(result)
+    });
+
+    
+
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -39,10 +58,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',(req,res)=>{
-    res.send('Newspaper fullstack website is running')
+app.get('/', (req, res) => {
+  res.send('Newspaper fullstack website is running')
 })
 
-app.listen(port,()=>{
-    console.log(`Newspaper fullstack website: ${port}`)
+app.listen(port, () => {
+  console.log(`Newspaper fullstack website: ${port}`)
 })
