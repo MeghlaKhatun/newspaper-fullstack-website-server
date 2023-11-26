@@ -28,7 +28,9 @@ async function run() {
 
 
     const articleCollection = client.db("NewspaperDB").collection('allArticles')
+    const userCollection = client.db("NewspaperDB").collection('user')
 
+    //article method
     app.post('/articles', async (req, res) => {
       const addArticles = req.body;
       console.log(addArticles);
@@ -41,6 +43,14 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
+
+    //users method
+    app.post('/user', async (req, res) => {
+      const addUser = req.body;
+      console.log(addUser);
+      const result = await userCollection.insertOne(addUser);
+      res.send(result)
+    });
 
 
 
