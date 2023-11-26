@@ -36,7 +36,11 @@ async function run() {
       res.send(result)
     });
 
-    
+    app.get('/articles',async(req,res)=>{
+      const cursor = articleCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
 
 
 
