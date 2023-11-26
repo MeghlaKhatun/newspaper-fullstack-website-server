@@ -46,11 +46,16 @@ async function run() {
 
     //users method
     app.post('/user', async (req, res) => {
-      const addUser = req.body;
-      console.log(addUser);
+      const addUser = req.body;  
       const result = await userCollection.insertOne(addUser);
       res.send(result)
     });
+
+    app.get('/user',async(req,res)=>{
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
 
 
 
