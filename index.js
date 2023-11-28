@@ -53,6 +53,18 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/articles/viewCount/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const update = { $inc: { viewCount: 1 } };
+      try {
+          const result = await articleCollection.updateOne(filter, update);
+          res.send(result);
+      } catch (error) {
+          res.status(500).json({ error: 'Error' });
+      }
+  })
+
     //users method
     app.post('/user', async (req, res) => {
       const addUser = req.body;  
@@ -87,9 +99,12 @@ async function run() {
     })
 
 
-
-
-
+    app.delete('/user/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
