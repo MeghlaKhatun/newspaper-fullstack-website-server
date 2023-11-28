@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -44,9 +44,25 @@ async function run() {
       res.send(result)
     })
 
+    app.get("/articles/:id", async(req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const query = { _id:new ObjectId(id) };
+      const result = await articleCollection.findOne(query);
+      console.log(result)
+      res.send(result)
+    })
+
     //users method
     app.post('/user', async (req, res) => {
       const addUser = req.body;  
+
+      const query = { email:addUser?.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null })
+      }
+
       const result = await userCollection.insertOne(addUser);
       res.send(result)
     });
