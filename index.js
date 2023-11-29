@@ -29,6 +29,7 @@ async function run() {
 
     const articleCollection = client.db("NewspaperDB").collection('allArticles')
     const userCollection = client.db("NewspaperDB").collection('user')
+    const publisherCollection = client.db("NewspaperDB").collection('publisher')
 
     //article method
     app.post('/articles', async (req, res) => {
@@ -65,7 +66,6 @@ async function run() {
       }
     })
 
-
     app.patch('/articles/approve/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -77,6 +77,13 @@ async function run() {
       const result = await articleCollection.updateOne(filter, updatedDoc);
       res.send(result);
   });
+
+  app.delete('/articles/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await articleCollection.deleteOne(query);
+    res.send(result);
+  })
 
 
     //users method
@@ -106,7 +113,6 @@ async function run() {
       res.send(result);
     })
 
-
     app.put("/user/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -116,8 +122,8 @@ async function run() {
       const user = {
         $set: {
           name: updateUser.name,
-          photo: updateUser.email,
-          email: updateUser.photo,
+          photo: updateUser.photo,
+          email: updateUser.email,
         }
       }
 
@@ -126,14 +132,11 @@ async function run() {
 
     })
 
-
-
     app.get('/user', async (req, res) => {
       const cursor = userCollection.find();
       const result = await cursor.toArray();
       res.send(result)
     })
-
 
     app.delete('/user/:id', async (req, res) => {
       const id = req.params.id;
@@ -141,6 +144,23 @@ async function run() {
       const result = await userCollection.deleteOne(query);
       res.send(result);
     })
+
+
+
+    //publisher
+    app.post('/publisher', async (req, res) => {
+      const addPublisher = req.body;
+      console.log(addPublisher);
+      const result = await publisherCollection.insertOne(addPublisher);
+      res.send(result)
+    });
+
+    app.get('/publisher', async (req, res) => {
+      const cursor = publisherCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
 
 
     // Send a ping to confirm a successful connection
