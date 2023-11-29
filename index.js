@@ -38,16 +38,16 @@ async function run() {
       res.send(result)
     });
 
-    app.get('/articles',async(req,res)=>{
+    app.get('/articles', async (req, res) => {
       const cursor = articleCollection.find();
       const result = await cursor.toArray();
       res.send(result)
     })
 
-    app.get("/articles/:id", async(req, res) => {
+    app.get("/articles/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id)
-      const query = { _id:new ObjectId(id) };
+      const query = { _id: new ObjectId(id) };
       const result = await articleCollection.findOne(query);
       console.log(result)
       res.send(result)
@@ -58,18 +58,32 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const update = { $inc: { viewCount: 1 } };
       try {
-          const result = await articleCollection.updateOne(filter, update);
-          res.send(result);
+        const result = await articleCollection.updateOne(filter, update);
+        res.send(result);
       } catch (error) {
-          res.status(500).json({ error: 'Error' });
+        res.status(500).json({ error: 'Error' });
       }
-  })
+    })
+
+
+    app.patch('/articles/approve/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+          $set: {
+              status: 'Approve',
+          }
+      };
+      const result = await articleCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+  });
+
 
     //users method
     app.post('/user', async (req, res) => {
-      const addUser = req.body;  
+      const addUser = req.body;
 
-      const query = { email:addUser?.email }
+      const query = { email: addUser?.email }
       const existingUser = await userCollection.findOne(query);
       if (existingUser) {
         return res.send({ message: 'user already exists', insertedId: null })
@@ -92,7 +106,29 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/user',async(req,res)=>{
+
+    app.put("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateUser=req.body;
+
+      const user = {
+        $set: {
+          name: updateUser.name,
+          photo: updateUser.email,
+          email: updateUser.photo,
+        }
+      }
+
+      const result =await userCollection.updateOne(filter,user,options)
+      res.send(result)
+
+    })
+
+
+
+    app.get('/user', async (req, res) => {
       const cursor = userCollection.find();
       const result = await cursor.toArray();
       res.send(result)
