@@ -30,6 +30,7 @@ async function run() {
     const articleCollection = client.db("NewspaperDB").collection('allArticles')
     const userCollection = client.db("NewspaperDB").collection('user')
     const publisherCollection = client.db("NewspaperDB").collection('publisher')
+    const declineCollection = client.db("NewspaperDB").collection('decline')
 
     //article method
     app.post('/articles', async (req, res) => {
@@ -150,6 +151,19 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/user/admin/:email', async (req, res) => {
+      const email = req.params.email;
+
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === 'admin';
+      }
+      res.send({ admin });
+    })
+
+
     app.put("/user/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -195,6 +209,14 @@ async function run() {
     app.get('/publisher', async (req, res) => {
       const cursor = publisherCollection.find();
       const result = await cursor.toArray();
+      res.send(result)
+    })
+
+    //Decline 
+    app.post('/decline',async(req,res)=>{
+      const decline=req.body;
+      console.log(decline);
+      const result = await declineCollection.insertOne(decline);
       res.send(result)
     })
 
