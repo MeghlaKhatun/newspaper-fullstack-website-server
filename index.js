@@ -90,6 +90,31 @@ async function run() {
       res.send(result);
   });
 
+  app.put("/articles/:id", async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const options = { upsert: true };
+    const updateArticles=req.body;
+
+    const article = {
+      $set: {
+        authorName: updateArticles.authorName,
+        image: updateArticles.image,
+        authorEmail: updateArticles.authorEmail,
+        tag: updateArticles.tag,
+        title: updateArticles.title,
+        authorProfile: updateArticles.authorProfile,
+        description:updateArticles.description,
+        date:updateArticles.date,
+        publisher:updateArticles.publisher,
+      }
+    }
+
+    const result =await articleCollection.updateOne(filter,article,options)
+    res.send(result)
+
+  })
+
   app.delete('/articles/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) }
